@@ -96,4 +96,12 @@ class PoDataTest {
         assertEquals("Aktualisierung verfügbar", po["Update available", 1])
         assertNull(po["Update available", 2])
     }
+
+    @Test
+    fun invalidPluralRule() {
+        val po = PoData.read(resource("invalid-plural.po"))
+
+        assertEquals("Aktualisierung verfügbar", po["Update available", 1])
+        assertEquals("Aktualisierung verfügbar", po["Update available", 2])
+    }
 }

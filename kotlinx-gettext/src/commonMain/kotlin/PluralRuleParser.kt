@@ -77,10 +77,11 @@ internal class PluralRuleParser(private val rule: String) {
                             result = result * 10 + rule[end].digitToInt()
                             end++
                         }
-                        if (end != offset) {
-                            offset = end
-                            add(NumberLiteral(result))
+                        require(end != offset) {
+                            "Unexpected character '${rule[offset]}' at offset $offset in plural rule: $rule"
                         }
+                        offset = end
+                        add(NumberLiteral(result))
                     }
                 }
             }

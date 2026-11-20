@@ -21,6 +21,7 @@ import name.kropp.kotlinx.gettext.PluralRuleToken.*
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class LexerTest {
     @Test
@@ -139,5 +140,12 @@ class LexerTest {
         assertEquals(LeftParen, tokens[0])
         assertEquals(QuestionMark, tokens[14])
         assertEquals(RightParen, tokens[90])
+    }
+
+    @Test
+    fun unexpectedCharacter() {
+        val rule = PluralRuleParser("(x != 1)")
+
+        assertFailsWith<IllegalArgumentException> { rule.lexer() }
     }
 }
