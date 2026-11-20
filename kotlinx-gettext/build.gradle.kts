@@ -1,59 +1,44 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsPlugin
 import java.net.URI
 
 plugins {
-    kotlin("multiplatform")
-    `java-library`
+    alias(libs.plugins.kotlin.multiplatform)
     `maven-publish`
     signing
 }
 
-rootProject.plugins.withType<NodeJsRootPlugin> {
-    rootProject.the<NodeJsRootExtension>().download = false
+plugins.withType<NodeJsPlugin> {
+    the<NodeJsEnvSpec>().download.set(false)
 }
 
 kotlin {
     explicitApi()
 
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    jvm {
-        java {
-        }
-    }
+    jvm()
 
-    js(IR) {
-        nodejs {
-        }
+    js {
+        nodejs()
     }
 
     sourceSets {
-        val okioVersion = "3.2.0"
-        val commonMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib"))
-                implementation("com.squareup.okio:okio:$okioVersion")
-            }
+        commonMain.dependencies {
+            implementation(libs.okio)
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
-        val jsTest by getting {
-            dependencies {
-                implementation("com.squareup.okio:okio-nodefilesystem:$okioVersion")
-            }
+        jsTest.dependencies {
+            implementation(libs.okio.nodefilesystem)
         }
     }
 }
 
-val javadocJar by tasks.registering(Jar::class) {
+val javadocJar = tasks.register<Jar>("javadocJar") {
     archiveClassifier.set("javadoc")
 }
 

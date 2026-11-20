@@ -16,6 +16,7 @@
 
 package name.kropp.kotlinx.gettext
 
+import com.tschuchort.compiletesting.JvmCompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
@@ -23,6 +24,7 @@ import kotlin.test.Test
 import java.io.File
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCompilerApi::class)
 class SmokeTest {
     @Test
     fun smoke() {
@@ -137,11 +139,9 @@ fun trc(ctx: String, text: String) {}
         assertEquals("$DEFAULT_POT_HEADER\n\n#: main.kt:2\nmsgid \"Hello,\\n\\\"World\\\"!\"\nmsgstr \"\"\n", potFile)
     }
 
-    @OptIn(ExperimentalCompilerApi::class)
-    private fun compile(vararg sourceFile: SourceFile, defaultKeywords: List<String> = listOf("tr")): KotlinCompilation.Result {
+    private fun compile(vararg sourceFile: SourceFile, defaultKeywords: List<String> = listOf("tr")): JvmCompilationResult {
         return KotlinCompilation().apply {
             sources = sourceFile.toList()
-            useIR = true
             compilerPluginRegistrars = listOf(GettextCompilerPluginRegistrar(File(workingDir, "i18n.pot").absolutePath, defaultKeywords))
             inheritClassPath = true
         }.compile()

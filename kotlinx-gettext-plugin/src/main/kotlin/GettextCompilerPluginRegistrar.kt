@@ -18,12 +18,13 @@ package name.kropp.kotlinx.gettext
 
 import com.google.auto.service.AutoService
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
-import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.config.MessageCollectorAccess
+import org.jetbrains.kotlin.config.messageCollector
 import java.io.File
 
 const val KOTLIN_PLUGIN_ID = "name.kropp.kotlinx-gettext"
@@ -41,11 +42,15 @@ class GettextCompilerPluginRegistrar(
         defaultKeywords = listOf("tr"),
     )
 
+    override val pluginId: String = KOTLIN_PLUGIN_ID
+
     override val supportsK2: Boolean
         get() = true
 
+    // The extractor reports at OUTPUT and INFO severities, which need the message collector itself.
+    @OptIn(MessageCollectorAccess::class)
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        val messageCollector = configuration.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
+        val messageCollector = configuration.messageCollector
         val file = File(configuration.get(GettextCommandLineProcessor.ARG_POT_FILE, defaultPotFile))
         runCatching { file.parentFile.mkdirs() }
 

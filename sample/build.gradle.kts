@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm")
+    alias(libs.plugins.kotlin.jvm)
     id("name.kropp.kotlinx-gettext") version "0.7.0"
 }
 

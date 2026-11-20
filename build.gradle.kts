@@ -3,8 +3,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("multiplatform") version "2.0.10" apply false
-    id("com.google.devtools.ksp") version "2.0.10-1.0.24" apply false
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.ksp) apply false
     wrapper
 }
 
@@ -16,25 +17,25 @@ allprojects {
         mavenCentral()
     }
 
-    tasks.withType<JavaCompile>().all {
+    tasks.withType<JavaCompile>().configureEach {
         sourceCompatibility = "11"
         targetCompatibility = "11"
 
         options.encoding = "UTF-8"
     }
 
-    tasks.withType<KotlinCompile>().all {
+    tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
-            languageVersion.set(KotlinVersion.KOTLIN_2_0)
-            apiVersion.set(KotlinVersion.KOTLIN_2_0)
+            languageVersion.set(KotlinVersion.KOTLIN_2_2)
+            apiVersion.set(KotlinVersion.KOTLIN_2_2)
         }
     }
 }
 
 tasks.wrapper {
     distributionType = Wrapper.DistributionType.BIN
-    gradleVersion = "8.5"
+    gradleVersion = "9.9.2"
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-bin.zip"
-    distributionSha256Sum = "9d926787066a081739e8200858338b4a69e837c3a821a33aca9db09dd4a41026"
+    distributionSha256Sum = "971fcd7150ca4ba04852c0b2ca0d2d0ab9468e14b03473eab19528809914c76b"
 }

@@ -19,6 +19,7 @@ package name.kropp.kotlinx.gettext
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrConstKind
+import org.jetbrains.kotlin.ir.declarations.IrParameterKind
 import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 
 class KeywordSpec(
@@ -53,11 +54,17 @@ class KeywordSpec(
         }
     }
 
+    /**
+     * Returns the string constant passed as the regular (non-receiver) argument at [index].
+     */
+    @OptIn(UnsafeDuringIrConstructionAPI::class)
     private fun getStringOrNull(expression: IrCall, index: Int): String? {
-        val valueArgument = expression.getValueArgument(index)
-        if (valueArgument is IrConst<*> && valueArgument.kind == IrConstKind.String) {
-            @Suppress("UNCHECKED_CAST")
-            return (valueArgument as IrConst<String>).value
+        val parameter = expression.symbol.owner.parameters
+            .filter { it.kind == IrParameterKind.Regular }
+            .getOrNull(index) ?: return null
+        val argument = expression.arguments[parameter]
+        if (argument is IrConst && argument.kind == IrConstKind.String) {
+            return argument.value as String
         }
         return null
     }

@@ -1,38 +1,26 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import java.net.URI
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm")
+    alias(libs.plugins.kotlin.jvm)
     `java-library`
     `maven-publish`
     signing
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    compileOnly("org.jetbrains.kotlin:kotlin-compiler-embeddable")
+    compileOnly(libs.kotlin.compiler.embeddable)
 
-    compileOnly("com.google.auto.service:auto-service-annotations:1.0.1")
-    ksp("dev.zacsweers.autoservice:auto-service-ksp:1.2.0")
+    compileOnly(libs.autoService.annotations)
+    ksp(libs.autoService.ksp)
 
     testImplementation(kotlin("test"))
-    testCompileOnly("com.google.auto.service:auto-service-annotations:1.1.1")
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.5.0")
+    testCompileOnly(libs.autoService.annotations)
+    testImplementation(libs.kctfork.core)
 }
 
 tasks.test {
     useJUnitPlatform()
-}
-
-tasks.withType<KotlinCompile>().all {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_11)
-        languageVersion.set(KotlinVersion.KOTLIN_2_0)
-        apiVersion.set(KotlinVersion.KOTLIN_2_0)
-    }
 }
 
 java {
