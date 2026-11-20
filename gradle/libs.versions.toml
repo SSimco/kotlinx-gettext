@@ -6,6 +6,7 @@ autoService = "1.1.1"
 autoServiceKsp = "1.2.0"
 kctfork = "0.14.0"
 pluginPublish = "2.2.1"
+mavenPublish = "0.37.0"
 
 [libraries]
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
@@ -21,3 +22,4 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 pluginPublish = { id = "com.gradle.plugin-publish", version.ref = "pluginPublish" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
