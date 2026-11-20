@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsPlugin
+import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -25,16 +26,15 @@ kotlin {
     }
 
     sourceSets {
-        commonMain.dependencies {
-            implementation(libs.okio)
-        }
         commonTest.dependencies {
             implementation(kotlin("test"))
         }
-        jsTest.dependencies {
-            implementation(libs.okio.nodefilesystem)
-        }
     }
+}
+
+// JS tests read fixtures from this directory through the resource() test helper.
+tasks.withType<KotlinJsTest>().configureEach {
+    environment("KOTLINX_GETTEXT_TEST_RESOURCES", file("src/commonTest/resources").absolutePath)
 }
 
 signing {

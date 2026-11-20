@@ -16,8 +16,6 @@
 
 package name.kropp.kotlinx.gettext
 
- import okio.Source
-import okio.source
 import java.io.InputStream
 import java.text.MessageFormat
 
@@ -65,32 +63,35 @@ public fun I18n.trnc(context: String, text: String, plural: String, n: Long, var
  * Loads a PO file from the given input stream and closes it.
  */
 public fun PoData.Companion.read(input: InputStream): PoData =
-    read(input.source())
+    read(input.use { it.readBytes() })
 
 /**
- * Load translations for given [locale] from given input stream.
+ * Load translations for given [locale] from given input stream and close it.
+ * The stream can contain a PO file or a compiled MO file.
  */
 public fun Gettext.Companion.load(locale: Locale, s: InputStream): Gettext =
-    load(locale, s.source())
+    load(locale, s.use { it.readBytes() })
 
 /**
- * Load translations for given [locale] from given input stream.
+ * Load translations for given [locale] from given input stream and close it.
+ * The stream can contain a PO file or a compiled MO file.
  */
 public fun Gettext.Companion.load(locale: java.util.Locale, s: InputStream): Gettext =
-    load(locale.toGettextLocale(), s.source())
+    load(locale.toGettextLocale(), s)
 
 /**
- * Load translations for given [locale] from the given [source].
+ * Load translations for given [locale] from the given [catalog] file content.
+ * The catalog can be a PO file or a compiled MO file.
  */
-public fun Gettext.Companion.load(locale: java.util.Locale, source: Source): Gettext =
-    load(locale.toGettextLocale(), source)
+public fun Gettext.Companion.load(locale: java.util.Locale, catalog: ByteArray): Gettext =
+    load(locale.toGettextLocale(), catalog)
 
 /**
- * Load translations for given [locale] from given [sources].
- * Sources are checked in order of priority, first available translation is used.
+ * Load translations for given [locale] from the given [catalogs] file contents.
+ * Catalogs are checked in order of priority, first available translation is used.
  */
-public fun Gettext.Companion.load(locale: java.util.Locale, vararg sources: Source): Gettext =
-    load(locale.toGettextLocale(), *sources)
+public fun Gettext.Companion.load(locale: java.util.Locale, vararg catalogs: ByteArray): Gettext =
+    load(locale.toGettextLocale(), *catalogs)
 
 // Formats with the catalog locale, so numbers and dates match the translation.
 private fun I18n.formatMessage(pattern: String, args: Array<out Any?>): String =

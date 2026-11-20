@@ -16,11 +16,6 @@
 
 package name.kropp.kotlinx.gettext
 
-import okio.BufferedSource
-import okio.Source
-import okio.buffer
-import okio.use
-
 // Reads compiled GNU gettext MO files into the same PoData model as PO files.
 // The format is described at
 // https://www.gnu.org/software/gettext/manual/html_node/MO-Files.html
@@ -31,21 +26,16 @@ internal object MoData {
     private const val TABLE_ENTRY_SIZE = 8
     private const val NUL = '\u0000'
 
-    // Returns true when the source starts with the MO magic number.
-    // The check does not consume any bytes.
-    fun isMo(source: BufferedSource): Boolean {
-        val peek = source.peek()
-        if (!peek.request(4)) return false
-        val magic = peek.readIntLe().toLong() and 0xffffffffL
+    // Returns true when the data starts with the MO magic number in either byte order.
+    fun isMo(data: ByteArray): Boolean {
+        if (data.size < 4) return false
+        val magic = (0 until 4).fold(0L) { value, i -> value or ((data[i].toLong() and 0xff) shl (8 * i)) }
         return magic == MAGIC || magic == MAGIC_SWAPPED
     }
 
-    // Reads an MO file and closes the input.
+    // Reads an MO file.
     // Throws IllegalArgumentException when the file is malformed.
-    fun read(input: Source): PoData {
-        val data = input.buffer().use { it.readByteArray() }
-        return Reader(data).read()
-    }
+    fun read(data: ByteArray): PoData = Reader(data).read()
 
     private class Reader(private val data: ByteArray) {
         private val bigEndian: Boolean

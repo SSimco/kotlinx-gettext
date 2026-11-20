@@ -30,10 +30,10 @@ println(i18n.tr("Hello world!"))
 `Locale` is the same class on every platform.
 It accepts language tags, such as `de-DE`,
 and POSIX locale names, such as `de_DE.UTF-8`.
-In common code, pass the PO file as an okio `Source`:
+In common code, pass the PO file content as a `ByteArray`:
 
 ```kotlin
-val i18n = Gettext.load(Locale("de"), source)
+val i18n = Gettext.load(Locale("de"), bytes)
 ```
 
 `Gettext.load` also accepts compiled MO files, such as those built with `msgfmt`.

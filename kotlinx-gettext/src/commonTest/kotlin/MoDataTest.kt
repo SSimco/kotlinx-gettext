@@ -16,7 +16,6 @@
 
 package name.kropp.kotlinx.gettext
 
-import okio.Buffer
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -96,7 +95,7 @@ class MoDataTest {
 
     @Test
     fun emptySourceIsEmptyPo() {
-        val gettext = Gettext.load(Locale("de"), Buffer())
+        val gettext = Gettext.load(Locale("de"), ByteArray(0))
 
         assertEquals("Hello", gettext.tr("Hello"))
     }
@@ -104,58 +103,58 @@ class MoDataTest {
     @Test
     fun tooShort() {
         assertFailsWith<IllegalArgumentException> {
-            Gettext.load(Locale("de"), source(moBytes("Hello" to "Hallo").copyOf(20)))
+            Gettext.load(Locale("de"), mo("Hello" to "Hallo").copyOf(20))
         }
     }
 
     @Test
     fun unsupportedRevision() {
-        val bytes = moBytes("Hello" to "Hallo")
+        val bytes = mo("Hello" to "Hallo")
         bytes.setIntLe(4, 2 shl 16)
 
-        assertFailsWith<IllegalArgumentException> { Gettext.load(Locale("de"), source(bytes)) }
+        assertFailsWith<IllegalArgumentException> { Gettext.load(Locale("de"), bytes) }
     }
 
     @Test
     fun minorRevisionIsAccepted() {
-        val bytes = moBytes("Hello" to "Hallo")
+        val bytes = mo("Hello" to "Hallo")
         bytes.setIntLe(4, 1)
 
-        assertEquals("Hallo", Gettext.load(Locale("de"), source(bytes)).tr("Hello"))
+        assertEquals("Hallo", Gettext.load(Locale("de"), bytes).tr("Hello"))
     }
 
     @Test
     fun tableOutOfBounds() {
-        val bytes = moBytes("Hello" to "Hallo")
+        val bytes = mo("Hello" to "Hallo")
         bytes.setIntLe(16, bytes.size - 4)
 
-        assertFailsWith<IllegalArgumentException> { Gettext.load(Locale("de"), source(bytes)) }
+        assertFailsWith<IllegalArgumentException> { Gettext.load(Locale("de"), bytes) }
     }
 
     @Test
     fun hugeStringCount() {
-        val bytes = moBytes("Hello" to "Hallo")
+        val bytes = mo("Hello" to "Hallo")
         bytes.setIntLe(8, -1)
 
-        assertFailsWith<IllegalArgumentException> { Gettext.load(Locale("de"), source(bytes)) }
+        assertFailsWith<IllegalArgumentException> { Gettext.load(Locale("de"), bytes) }
     }
 
     @Test
     fun stringOutOfBounds() {
-        val bytes = moBytes("Hello" to "Hallo")
+        val bytes = mo("Hello" to "Hallo")
         // The length of the first translated string.
         bytes.setIntLe(36, bytes.size)
 
-        assertFailsWith<IllegalArgumentException> { Gettext.load(Locale("de"), source(bytes)) }
+        assertFailsWith<IllegalArgumentException> { Gettext.load(Locale("de"), bytes) }
     }
 
     @Test
     fun hugeStringOffset() {
-        val bytes = moBytes("Hello" to "Hallo")
+        val bytes = mo("Hello" to "Hallo")
         // The offset of the first translated string.
         bytes.setIntLe(40, -1)
 
-        assertFailsWith<IllegalArgumentException> { Gettext.load(Locale("de"), source(bytes)) }
+        assertFailsWith<IllegalArgumentException> { Gettext.load(Locale("de"), bytes) }
     }
 
     private fun assertTranslations(gettext: Gettext) {
@@ -180,32 +179,23 @@ class MoDataTest {
         assertEquals("Пунктов", gettext.trnc("menu", "Item", "Items", 7))
     }
 
-    private fun mo(vararg strings: Pair<String, String>): Buffer = source(moBytes(*strings))
-
-    private fun source(bytes: ByteArray): Buffer = Buffer().write(bytes)
-
     // Builds a little-endian MO file with the given original and translated strings.
-    private fun moBytes(vararg strings: Pair<String, String>): ByteArray {
+    private fun mo(vararg strings: Pair<String, String>): ByteArray {
         val originals = strings.map { it.first.encodeToByteArray() }
         val translations = strings.map { it.second.encodeToByteArray() }
         val tableSize = strings.size * 8
         var offset = 28 + 2 * tableSize
 
-        val header = Buffer()
-            .writeIntLe(0x950412de.toInt())
-            .writeIntLe(0)
-            .writeIntLe(strings.size)
-            .writeIntLe(28)
-            .writeIntLe(28 + tableSize)
-            .writeIntLe(0)
-            .writeIntLe(0)
-        val data = Buffer()
+        val header = mutableListOf(0x950412de.toInt(), 0, strings.size, 28, 28 + tableSize, 0, 0)
+        val data = mutableListOf<Byte>()
         for (bytes in originals + translations) {
-            header.writeIntLe(bytes.size).writeIntLe(offset)
-            data.write(bytes).writeByte(0)
+            header += listOf(bytes.size, offset)
+            data += bytes.toList() + 0.toByte()
             offset += bytes.size + 1
         }
-        return header.readByteArray() + data.readByteArray()
+        val result = ByteArray(header.size * 4) + data.toByteArray()
+        header.forEachIndexed { i, value -> result.setIntLe(i * 4, value) }
+        return result
     }
 
     private fun ByteArray.setIntLe(offset: Int, value: Int) {

@@ -1,7 +1,6 @@
 [versions]
 kotlin = "2.4.21"
 ksp = "2.3.14"
-okio = "3.18.2"
 autoService = "1.1.1"
 autoServiceKsp = "1.2.0"
 kctfork = "0.14.0"
@@ -9,8 +8,6 @@ pluginPublish = "2.2.1"
 mavenPublish = "0.37.0"
 
 [libraries]
-okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
-okio-nodefilesystem = { module = "com.squareup.okio:okio-nodefilesystem", version.ref = "okio" }
 kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 kotlin-gradle-plugin-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
 autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }

@@ -16,9 +16,6 @@
 
 package name.kropp.kotlinx.gettext
 
-import okio.Source
-import okio.buffer
-
 /**
  * Provides `gettext`-compatible interface for string translation via PO or MO files.
  */
@@ -102,34 +99,32 @@ public class Gettext private constructor(
 
     public companion object {
         /**
-         * Load translations for given [locale] from the given [source].
-         * The source can be a PO file or a compiled MO file.
+         * Load translations for given [locale] from the given [catalog] file content.
+         * The catalog can be a PO file or a compiled MO file.
          * The format is detected from the content.
-         * MO files must use UTF-8.
+         * Catalogs must use UTF-8.
          *
          * @throws IllegalArgumentException if the MO file is malformed.
          */
-        public fun load(locale: Locale, source: Source): Gettext {
-            return Gettext(locale, listOf(readCatalog(source)))
+        public fun load(locale: Locale, catalog: ByteArray): Gettext {
+            return Gettext(locale, listOf(readCatalog(catalog)))
         }
 
         /**
-         * Load translations for given [locale] from given [sources].
-         * Sources are checked in order of priority, first available translation is used.
-         * Each source can be a PO file or a compiled MO file.
+         * Load translations for given [locale] from the given [catalogs] file contents.
+         * Catalogs are checked in order of priority, first available translation is used.
+         * Each catalog can be a PO file or a compiled MO file.
          * The format is detected from the content.
-         * MO files must use UTF-8.
+         * Catalogs must use UTF-8.
          *
          * @throws IllegalArgumentException if an MO file is malformed.
          */
-        public fun load(locale: Locale, vararg sources: Source): Gettext {
-            return Gettext(locale, sources.map { source -> readCatalog(source) })
+        public fun load(locale: Locale, vararg catalogs: ByteArray): Gettext {
+            return Gettext(locale, catalogs.map { catalog -> readCatalog(catalog) })
         }
 
-        private fun readCatalog(source: Source): PoData {
-            val buffered = source.buffer()
-            return if (MoData.isMo(buffered)) MoData.read(buffered) else PoData.read(buffered)
-        }
+        private fun readCatalog(data: ByteArray): PoData =
+            if (MoData.isMo(data)) MoData.read(data) else PoData.read(data)
 
         /**
          * Fallback locale that doesn't provide any translations.

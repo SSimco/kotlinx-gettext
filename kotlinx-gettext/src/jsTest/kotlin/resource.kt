@@ -16,14 +16,19 @@
 
 package name.kropp.kotlinx.gettext
 
-import okio.*
-import okio.Path.Companion.toPath
+import org.khronos.webgl.Int8Array
 
-external val __dirname: dynamic
+external val process: dynamic
 
-actual fun resource(name: String): Source {
-    val cwd = __dirname.toString().toPath()
-    val projectRoot = cwd.parent!!.parent!!.parent!!.parent!!.parent!!
-    val resourcePath = projectRoot / "kotlinx-gettext" / "build" / "processedResources" / "js" / "test" / name
-    return NodeJsFileSystem.source(resourcePath)
+external fun require(module: String): dynamic
+
+// The Gradle build sets this variable to the commonTest resources directory.
+private const val RESOURCES_VARIABLE = "KOTLINX_GETTEXT_TEST_RESOURCES"
+
+actual fun resource(name: String): ByteArray {
+    val directory = process.env[RESOURCES_VARIABLE] as String?
+        ?: error("$RESOURCES_VARIABLE is not set; run the tests through Gradle")
+    val buffer = require("fs").readFileSync(require("path").join(directory, name))
+    // Node returns a Buffer, which is a Uint8Array; Kotlin/JS represents ByteArray as an Int8Array.
+    return Int8Array(buffer.buffer, buffer.byteOffset, buffer.length).unsafeCast<ByteArray>()
 }

@@ -16,9 +16,6 @@
 
 package name.kropp.kotlinx.gettext
 
-import okio.Source
-import okio.buffer
-
 /**
  * Low-level representation of PO file.
  * Clients should use [I18n] instead.
@@ -79,9 +76,9 @@ public class PoData(
         private const val MAX_PLURAL_FORMS = 100
 
         /**
-         * Loads PO file from provided [input].
+         * Loads a PO file from the given UTF-8 encoded [input].
          */
-        public fun read(input: Source): PoData {
+        public fun read(input: ByteArray): PoData {
             val entries = mutableMapOf<String, PoEntry>()
             var pluralRule = ""
 
@@ -95,68 +92,62 @@ public class PoData(
 
             var key = Key.Unknown
 
-            val bufferedReader = input.buffer()
-            try {
-                while(true) {
-                    val line = bufferedReader.readUtf8Line() ?: break
-                    when {
-                        line.isBlank() -> {
-                            entry(entries, context, id, str, plural, cases)
-                            context = null
-                            id = null
-                            str = ""
-                            plural = null
-                            cases = mutableMapOf()
+            for (line in input.decodeToString().lines()) {
+                when {
+                    line.isBlank() -> {
+                        entry(entries, context, id, str, plural, cases)
+                        context = null
+                        id = null
+                        str = ""
+                        plural = null
+                        cases = mutableMapOf()
+                        key = Key.Unknown
+                    }
+                    line.startsWith("msgctxt ") -> {
+                        context = line.substringAfter("msgctxt ").unescape()
+                        key = Key.Context
+                    }
+                    line.startsWith("msgid ") -> {
+                        id = line.substringAfter("msgid ").unescape()
+                        key = Key.Id
+                    }
+                    line.startsWith("msgid_plural ") -> {
+                        plural = line.substringAfter("msgid_plural ").unescape()
+                        key = Key.Plural
+                    }
+                    line.startsWith("msgstr ") -> {
+                        str = line.substringAfter("msgstr ").unescape()
+                        key = Key.Str
+                    }
+                    line.startsWith("msgstr[") -> {
+                        val index = line.substringAfter("msgstr[").substringBefore(']').trim().toIntOrNull()
+                        if (index != null && index in 0 until MAX_PLURAL_FORMS) {
+                            caseIndex = index
+                            cases[index] = line.substringAfter(']').unescape()
+                            key = Key.Cases
+                        } else {
                             key = Key.Unknown
                         }
-                        line.startsWith("msgctxt ") -> {
-                            context = line.substringAfter("msgctxt ").unescape()
-                            key = Key.Context
-                        }
-                        line.startsWith("msgid ") -> {
-                            id = line.substringAfter("msgid ").unescape()
-                            key = Key.Id
-                        }
-                        line.startsWith("msgid_plural ") -> {
-                            plural = line.substringAfter("msgid_plural ").unescape()
-                            key = Key.Plural
-                        }
-                        line.startsWith("msgstr ") -> {
-                            str = line.substringAfter("msgstr ").unescape()
-                            key = Key.Str
-                        }
-                        line.startsWith("msgstr[") -> {
-                            val index = line.substringAfter("msgstr[").substringBefore(']').trim().toIntOrNull()
-                            if (index != null && index in 0 until MAX_PLURAL_FORMS) {
-                                caseIndex = index
-                                cases[index] = line.substringAfter(']').unescape()
-                                key = Key.Cases
-                            } else {
-                                key = Key.Unknown
-                            }
-                        }
-                        else -> {
-                            val unescaped = line.unescape()
-                            if (id?.isEmpty() == true && key == Key.Str && unescaped.startsWith("Plural-Forms:")) {
-                                pluralRule = pluralRuleFromHeader(unescaped)
-                            } else {
-                                when (key) {
-                                    Key.Context -> context += unescaped
-                                    Key.Id -> id += unescaped
-                                    Key.Str -> str += unescaped
-                                    Key.Plural -> plural += unescaped
-                                    Key.Cases -> cases[caseIndex] = cases.getValue(caseIndex) + unescaped
+                    }
+                    else -> {
+                        val unescaped = line.unescape()
+                        if (id?.isEmpty() == true && key == Key.Str && unescaped.startsWith("Plural-Forms:")) {
+                            pluralRule = pluralRuleFromHeader(unescaped)
+                        } else {
+                            when (key) {
+                                Key.Context -> context += unescaped
+                                Key.Id -> id += unescaped
+                                Key.Str -> str += unescaped
+                                Key.Plural -> plural += unescaped
+                                Key.Cases -> cases[caseIndex] = cases.getValue(caseIndex) + unescaped
 
-                                    else -> {}
-                                }
+                                else -> {}
                             }
                         }
                     }
                 }
-                entry(entries, context, id, str, plural, cases)
-            } finally {
-                bufferedReader.close()
             }
+            entry(entries, context, id, str, plural, cases)
             return PoData(entries, parsePluralRule(pluralRule))
         }
 
