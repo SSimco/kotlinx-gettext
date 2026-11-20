@@ -1,3 +1,4 @@
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -11,8 +12,8 @@ plugins {
 }
 
 allprojects {
-    group = "name.kropp.kotlinx-gettext"
-    version = "0.7.0"
+    group = "io.github.ssimco"
+    version = "0.8.0"
 
     repositories {
         mavenCentral()
@@ -30,6 +31,30 @@ allprojects {
             jvmTarget.set(JvmTarget.JVM_11)
             languageVersion.set(KotlinVersion.KOTLIN_2_2)
             apiVersion.set(KotlinVersion.KOTLIN_2_2)
+        }
+    }
+}
+
+subprojects {
+    plugins.withId("com.vanniktech.maven.publish") {
+        extensions.configure<MavenPublishBaseExtension> {
+            pom {
+                developers {
+                    developer {
+                        id.set("ssimco")
+                        name.set("SSimco")
+                        url.set("https://github.com/ssimco")
+                        roles.add("maintainer")
+                    }
+                    developer {
+                        id.set("kropp")
+                        name.set("Victor Kropp")
+                        email.set("victor@kropp.name")
+                        url.set("https://github.com/kropp")
+                        roles.add("original author")
+                    }
+                }
+            }
         }
     }
 }

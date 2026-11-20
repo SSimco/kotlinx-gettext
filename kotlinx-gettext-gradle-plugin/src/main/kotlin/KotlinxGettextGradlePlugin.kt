@@ -24,10 +24,10 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
-const val KOTLIN_PLUGIN_ID = "name.kropp.kotlinx-gettext"
-const val KOTLIN_PLUGIN_GROUP = "name.kropp.kotlinx-gettext"
+const val KOTLIN_PLUGIN_ID = "io.github.ssimco.kotlinx-gettext"
+const val KOTLIN_PLUGIN_GROUP = "io.github.ssimco"
 const val KOTLIN_PLUGIN_NAME = "kotlinx-gettext-plugin"
-const val KOTLIN_PLUGIN_VERSION = "0.7.0"
+const val KOTLIN_PLUGIN_VERSION = "0.8.0"
 
 @Suppress("unused")
 class KotlinxGettextGradlePlugin : KotlinCompilerPluginSupportPlugin {

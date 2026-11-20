@@ -13,12 +13,12 @@ dependencies {
 gradlePlugin {
     plugins {
         create("kotlinx-gettext") {
-            id = "name.kropp.kotlinx-gettext"
+            id = "io.github.ssimco.kotlinx-gettext"
 
             displayName = "Kotlinx Gettext"
             description = "Extract strings for i18n from Kotlin files in Gettext format"
-            website = "https://github.com/kropp/kotlinx-gettext"
-            vcsUrl = "https://github.com/kropp/kotlinx-gettext"
+            website = "https://github.com/ssimco/kotlinx-gettext"
+            vcsUrl = "https://github.com/ssimco/kotlinx-gettext"
             tags = listOf("kotlin", "i18n", "gettext")
 
             implementationClass = "name.kropp.kotlinx.gettext.gradle.KotlinxGettextGradlePlugin"

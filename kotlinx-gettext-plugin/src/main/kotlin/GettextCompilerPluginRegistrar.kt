@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.config.MessageCollectorAccess
 import org.jetbrains.kotlin.config.messageCollector
 import java.io.File
 
-const val KOTLIN_PLUGIN_ID = "name.kropp.kotlinx-gettext"
+const val KOTLIN_PLUGIN_ID = "io.github.ssimco.kotlinx-gettext"
 
 @OptIn(ExperimentalCompilerApi::class)
 @AutoService(CompilerPluginRegistrar::class)
