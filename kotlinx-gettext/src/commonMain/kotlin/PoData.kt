@@ -29,10 +29,13 @@ public class PoData(
 ) {
     /**
      * Get translation string for the key [id].
+     * For a plural entry, returns the first plural form.
+     * Returns `null` when the key is missing or its translation is empty.
      * Note: When context is needed, the key is prefixed with it and [CONTEXT_DELIMITER].
      */
     public operator fun get(id: String): String? {
-        return strings[id]?.str
+        val entry = strings[id] ?: return null
+        return if (entry.cases.isEmpty()) entry.str else entry.cases.first()
     }
 
     /**

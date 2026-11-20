@@ -25,7 +25,7 @@ class PoDataTest {
     fun test() {
         val po = PoData.read(resource("en.po"))
 
-        assertEquals("", po["Update available"])
+        assertEquals("Update available", po["Update available"])
         assertEquals("{0,number,integer} updates available", po["Update available", 0])
         assertEquals("Update available", po["Update available", 1])
         assertEquals("{0,number,integer} updates available", po["Update available", 2])
@@ -103,6 +103,13 @@ class PoDataTest {
 
         assertEquals("Aktualisierung verfügbar", po["Update available", 1])
         assertEquals("Aktualisierung verfügbar", po["Update available", 2])
+    }
+
+    @Test
+    fun pluralEntryWithoutCount() {
+        assertEquals("Aktualisierung verfügbar", PoData.read(resource("plural.po"))["Update available"])
+        assertEquals("Aktualisierung verfügbar", PoData.read(resource("some-plural.po"))["Update available"])
+        assertNull(PoData.read(resource("empty-plural.po"))["Update available"])
     }
 
     @Test

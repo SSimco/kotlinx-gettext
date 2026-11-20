@@ -65,4 +65,20 @@ class GettextTest {
         assertEquals("Aktualisierung verfügbar", gettext.trn("Update available", "{{count}} updates available", 1, "count" to "1"))
         assertEquals("2 updates available", gettext.trn("Update available", "{{count}} updates available", 2, "count" to "2"))
     }
+
+    @Test
+    fun trOnPluralEntryReturnsFirstForm() {
+        assertEquals("Aktualisierung verfügbar", Gettext.load(Locale("de"), resource("plural.po")).tr("Update available"))
+
+        val mo = Gettext.load(Locale("ru"), resource("mo.mo"))
+        assertEquals("Файл", mo.tr("File"))
+        assertEquals("Пункт", mo.trc("menu", "Item"))
+    }
+
+    @Test
+    fun trOnPluralEntryWithEmptyFirstFormFallsBack() {
+        val gettext = Gettext.load(Locale("de"), resource("empty-plural.po"), resource("plural.po"))
+
+        assertEquals("Aktualisierung verfügbar", gettext.tr("Update available"))
+    }
 }
