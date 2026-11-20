@@ -27,7 +27,7 @@ internal class PluralRuleParser(private val rule: String) {
         return try {
             // a plural rule is an expression, see grammar below
             parseExpression(lexer()) ?: EmptyRule
-        } catch (t: Throwable) {
+        } catch (_: Exception) {
             EmptyRule
         }
     }
@@ -79,7 +79,7 @@ internal class PluralRuleParser(private val rule: String) {
                         }
                         if (end != offset) {
                             offset = end
-                            add(Number(result))
+                            add(NumberLiteral(result))
                         }
                     }
                 }
@@ -123,7 +123,7 @@ internal class PluralRuleParser(private val rule: String) {
         if (first is N && tokens.size == 1) {
             return first
         }
-        if (first is Number && tokens.size == 1) {
+        if (first is NumberLiteral && tokens.size == 1) {
             return first
         }
         return null

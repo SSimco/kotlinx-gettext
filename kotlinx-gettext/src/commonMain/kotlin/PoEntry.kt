@@ -19,8 +19,18 @@ package name.kropp.kotlinx.gettext
 /**
  * Data for a single PO file entry.
  */
-public class PoEntry(
+public data class PoEntry(
+    /**
+     * Translated string, or an empty string for plural entries.
+     */
     public val str: String,
+    /**
+     * Untranslated plural form from `msgid_plural`, or `null` if the entry has no plural form.
+     */
     public val plural: String?,
-    public val cases: Array<String?>
+    /**
+     * Translated plural forms, indexed by the plural rule result.
+     * A form is `null` when its translation is empty.
+     */
+    public val cases: List<String?>,
 )

@@ -61,7 +61,7 @@ public class PoData(
         /**
          * Context and key separator.
          */
-        public val CONTEXT_DELIMITER: Char = '\u0004'
+        public const val CONTEXT_DELIMITER: Char = '\u0004'
 
         /**
          * Loads PO file from provided [input].
@@ -149,7 +149,7 @@ public class PoData(
 
         private fun entry(entries: MutableMap<String, PoEntry>, context: String?, id: String?, str: String, plural: String?, cases: List<String?>) {
             if (!id.isNullOrEmpty() && (str.isNotEmpty() || cases.isNotEmpty())) {
-                entries[if (context != null) "$context$CONTEXT_DELIMITER$id" else id] = PoEntry(str, plural, cases.toTypedArray())
+                entries[if (context != null) "$context$CONTEXT_DELIMITER$id" else id] = PoEntry(str, plural, cases.toList())
             }
         }
     }

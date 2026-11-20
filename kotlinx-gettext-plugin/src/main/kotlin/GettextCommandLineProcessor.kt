@@ -33,9 +33,9 @@ class GettextCommandLineProcessor : CommandLineProcessor {
         private const val OPTION_OVERWRITE = "overwrite"
         private const val OPTION_KEYWORD = "keyword"
 
-        val ARG_BASE_DIR = CompilerConfigurationKey<String>(OPTION_POT_FILE)
+        val ARG_BASE_DIR = CompilerConfigurationKey<String>(OPTION_BASE_DIR)
         val ARG_OVERWRITE = CompilerConfigurationKey<Boolean>(OPTION_OVERWRITE)
-        val ARG_POT_FILE = CompilerConfigurationKey<String>(OPTION_BASE_DIR)
+        val ARG_POT_FILE = CompilerConfigurationKey<String>(OPTION_POT_FILE)
         val ARG_KEYWORDS = CompilerConfigurationKey<List<String>>(OPTION_KEYWORD)
     }
 

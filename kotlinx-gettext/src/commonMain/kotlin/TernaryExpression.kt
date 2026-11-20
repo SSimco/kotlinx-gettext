@@ -22,32 +22,22 @@ package name.kropp.kotlinx.gettext
  * If [condition] evaluates to a non-zero value, the result is the evaluation result of the [left] part,
  * otherwise it is the result of the evaluation of the [right] part.
  */
-public class TernaryExpression(
-    private val condition: PluralRuleExpression,
-    private val left: PluralRuleExpression,
-    private val right: PluralRuleExpression,
+public data class TernaryExpression(
+    /**
+     * Condition that selects the [left] or [right] branch.
+     */
+    public val condition: PluralRuleExpression,
+    /**
+     * Expression evaluated when [condition] is non-zero.
+     */
+    public val left: PluralRuleExpression,
+    /**
+     * Expression evaluated when [condition] is zero.
+     */
+    public val right: PluralRuleExpression,
 ) : PluralRuleExpression {
     override fun evaluate(n: Int): Int {
         return if (condition.evaluate(n) != 0) left.evaluate(n) else right.evaluate(n)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-
-        if (other !is TernaryExpression) return false
-
-        if (condition != other.condition) return false
-        if (left != other.left) return false
-        if (right != other.right) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = condition.hashCode()
-        result = 31 * result + left.hashCode()
-        result = 31 * result + right.hashCode()
-        return result
     }
 
     override fun toString(): String {

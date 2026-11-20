@@ -19,9 +19,9 @@ package name.kropp.kotlinx.gettext
 /**
  * A token in plural rule, such as number, logical or comparison operation, or parenthesis
  */
-public interface PluralRuleToken {
-    public object LeftParen : PluralRuleToken
-    public object RightParen : PluralRuleToken
-    public object QuestionMark : PluralRuleToken
-    public object Colon : PluralRuleToken
+public sealed interface PluralRuleToken {
+    public data object LeftParen : PluralRuleToken
+    public data object RightParen : PluralRuleToken
+    public data object QuestionMark : PluralRuleToken
+    public data object Colon : PluralRuleToken
 }

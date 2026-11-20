@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
+import org.jetbrains.kotlin.ir.visitors.acceptVoid
 import java.io.File
 
 class GettextIrGenerationExtension(
@@ -44,14 +45,14 @@ class GettextIrGenerationExtension(
                 } catch (_: Throwable) {
                     f.name
                 }
-            GettextExtractor(
+            val extractor = GettextExtractor(
                 messageCollector,
                 poEntries,
                 keywords.map { KeywordSpec(it) },
                 relativePath,
                 file.fileEntry
             )
-                .visitFile(file)
+            file.acceptVoid(extractor)
         }
 
         messageCollector.report(CompilerMessageSeverity.INFO, "[gettext] Collected ${poEntries.size} entries")

@@ -19,9 +19,10 @@ package name.kropp.kotlinx.gettext
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.IrFileEntry
+import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.expressions.IrCall
-import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
+import org.jetbrains.kotlin.ir.visitors.IrVisitorVoid
+import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
 
 class GettextExtractor(
     private val messageCollector: MessageCollector,
@@ -29,16 +30,19 @@ class GettextExtractor(
     private val keywords: List<KeywordSpec>,
     private val relativePath: String,
     private val fileEntry: IrFileEntry,
-) : IrElementTransformerVoid() {
-    override fun visitCall(expression: IrCall): IrExpression {
-        super.visitCall(expression)
+) : IrVisitorVoid() {
+    override fun visitElement(element: IrElement) {
+        element.acceptChildrenVoid(this)
+    }
+
+    override fun visitCall(expression: IrCall) {
+        // Visit nested calls first, so their entries precede the enclosing call's entry.
+        expression.acceptChildrenVoid(this)
 
         val info = keywords.firstOrNull { it.matches(expression) }?.process(expression, "$relativePath:${fileEntry.getLineNumber(expression.startOffset) + 1}")
         if (info != null) {
             poEntries.add(info)
             messageCollector.report(CompilerMessageSeverity.OUTPUT, "[gettext] ${info.references[0]} \"${info.text}\"")
         }
-
-        return expression
     }
 }

@@ -70,7 +70,7 @@ class KeywordSpec(
     }
 
     private fun flags(text: String): String? {
-        return if ('{' in text) return "java-format" else null
+        return if ('{' in text) "java-format" else null
     }
 }
 

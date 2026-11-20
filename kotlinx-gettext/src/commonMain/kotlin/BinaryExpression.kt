@@ -19,10 +19,19 @@ package name.kropp.kotlinx.gettext
 /**
  * Any binary expression used in plural rule
  */
-public class BinaryExpression(
-    private val left: PluralRuleExpression,
-    private val op: BinaryOp,
-    private val right: PluralRuleExpression,
+public data class BinaryExpression(
+    /**
+     * Left operand.
+     */
+    public val left: PluralRuleExpression,
+    /**
+     * Operator applied to the operands.
+     */
+    public val op: BinaryOp,
+    /**
+     * Right operand.
+     */
+    public val right: PluralRuleExpression,
 ) : PluralRuleExpression {
 
     override fun evaluate(n: Int): Int {
@@ -37,25 +46,6 @@ public class BinaryExpression(
             BinaryOp.And -> if ((left.evaluate(n) != 0) && (right.evaluate(n) != 0)) 1 else 0
             BinaryOp.Or -> if ((left.evaluate(n) != 0) || (right.evaluate(n) != 0)) 1 else 0
         }
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-
-        if (other !is BinaryExpression) return false
-
-        if (left != other.left) return false
-        if (op != other.op) return false
-        if (right != other.right) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = left.hashCode()
-        result = 31 * result + op.hashCode()
-        result = 31 * result + right.hashCode()
-        return result
     }
 
     override fun toString(): String {

@@ -27,70 +27,70 @@ class LexerTest {
     fun zero() {
         val rule = PluralRuleParser("0")
 
-        assertContentEquals(listOf(Number(0)), rule.lexer())
+        assertContentEquals(listOf(NumberLiteral(0)), rule.lexer())
     }
 
     @Test
     fun notZero() {
         val rule = PluralRuleParser("n != 0")
 
-        assertContentEquals(listOf(N, NotEquals, Number(0)), rule.lexer())
+        assertContentEquals(listOf(N, NotEquals, NumberLiteral(0)), rule.lexer())
     }
 
     @Test
     fun gtZero() {
         val rule = PluralRuleParser("n > 0")
 
-        assertContentEquals(listOf(N, Greater, Number(0)), rule.lexer())
+        assertContentEquals(listOf(N, Greater, NumberLiteral(0)), rule.lexer())
     }
 
     @Test
     fun gteZero() {
         val rule = PluralRuleParser("n >= 0")
 
-        assertContentEquals(listOf(N, GreaterOrEquals, Number(0)), rule.lexer())
+        assertContentEquals(listOf(N, GreaterOrEquals, NumberLiteral(0)), rule.lexer())
     }
 
     @Test
     fun ltTen() {
         val rule = PluralRuleParser("n < 10")
 
-        assertContentEquals(listOf(N, Less, Number(10)), rule.lexer())
+        assertContentEquals(listOf(N, Less, NumberLiteral(10)), rule.lexer())
     }
 
     @Test
     fun leTen() {
         val rule = PluralRuleParser("n <= 10")
 
-        assertContentEquals(listOf(N, LessOrEquals, Number(10)), rule.lexer())
+        assertContentEquals(listOf(N, LessOrEquals, NumberLiteral(10)), rule.lexer())
     }
 
     @Test
     fun remainder() {
         val rule = PluralRuleParser("n % 10")
 
-        assertContentEquals(listOf(N, Remainder, Number(10)), rule.lexer())
+        assertContentEquals(listOf(N, Remainder, NumberLiteral(10)), rule.lexer())
     }
 
     @Test
     fun bracesNotZero() {
         val rule = PluralRuleParser("(n != 0)")
 
-        assertContentEquals(listOf(LeftParen, N, NotEquals, Number(0), RightParen), rule.lexer())
+        assertContentEquals(listOf(LeftParen, N, NotEquals, NumberLiteral(0), RightParen), rule.lexer())
     }
 
     @Test
     fun andZero() {
         val rule = PluralRuleParser("n && 0")
 
-        assertContentEquals(listOf(N, And, Number(0)), rule.lexer())
+        assertContentEquals(listOf(N, And, NumberLiteral(0)), rule.lexer())
     }
 
     @Test
     fun orOne() {
         val rule = PluralRuleParser("n || 1")
 
-        assertContentEquals(listOf(N, Or, Number(1)), rule.lexer())
+        assertContentEquals(listOf(N, Or, NumberLiteral(1)), rule.lexer())
     }
 
     @Test
@@ -98,8 +98,8 @@ class LexerTest {
         val rule = PluralRuleParser("n ? 123 : 321")
 
         assertContentEquals(listOf(N, QuestionMark,
-            Number(123), Colon,
-            Number(321)
+            NumberLiteral(123), Colon,
+            NumberLiteral(321)
         ), rule.lexer())
     }
 
@@ -109,11 +109,11 @@ class LexerTest {
 
         assertContentEquals(listOf(
             LeftParen,
-                N, Equals, Number(1),
+                N, Equals, NumberLiteral(1),
                 Or,
-                N, Remainder, Number(10), Equals, Number(1),
+                N, Remainder, NumberLiteral(10), Equals, NumberLiteral(1),
             RightParen,
-            QuestionMark, Number(0), Colon, Number(1)
+            QuestionMark, NumberLiteral(0), Colon, NumberLiteral(1)
         ), rule.lexer())
     }
 
@@ -123,8 +123,8 @@ class LexerTest {
 
         assertContentEquals(listOf(
             LeftParen,
-            LeftParen, N, Remainder, Number(10), Equals, Number(1), RightParen,
-            QuestionMark, Number(0), Colon, LeftParen, Number(1), RightParen,
+            LeftParen, N, Remainder, NumberLiteral(10), Equals, NumberLiteral(1), RightParen,
+            QuestionMark, NumberLiteral(0), Colon, LeftParen, NumberLiteral(1), RightParen,
             RightParen
         ), rule.lexer())
     }

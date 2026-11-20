@@ -106,6 +106,50 @@ fun trc(ctx: String, text: String) {}
     }
 
     @Test
+    fun nestedCalls() {
+        val result = compile(SourceFile.kotlin("main.kt", """
+    fun main() {
+      tr("Outer", tr("Inner"))
+    }
+    fun tr(text: String, arg: String = ""): String = text
+            """.trimIndent()
+            )
+        )
+
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+
+        val potFile = File(result.outputDirectory.parentFile, "i18n.pot").readText()
+        assertEquals(
+            "$DEFAULT_POT_HEADER\n\n#: main.kt:2\nmsgid \"Inner\"\nmsgstr \"\"\n\n#: main.kt:2\nmsgid \"Outer\"\nmsgstr \"\"\n",
+            potFile
+        )
+    }
+
+    @Test
+    fun memberCallWithPlural() {
+        val result = compile(
+            SourceFile.kotlin("main.kt", """
+    class I18n {
+      fun trn(text: String, plural: String, n: Int): String = text
+    }
+    fun main() {
+      I18n().trn("One file", "Many files", 2)
+    }
+            """.trimIndent()
+            ),
+            defaultKeywords = listOf("trn:1,2")
+        )
+
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+
+        val potFile = File(result.outputDirectory.parentFile, "i18n.pot").readText()
+        assertEquals(
+            "$DEFAULT_POT_HEADER\n\n#: main.kt:5\nmsgid \"One file\"\nmsgid_plural \"Many files\"\nmsgstr[0] \"\"\nmsgstr[1] \"\"\n",
+            potFile
+        )
+    }
+
+    @Test
     fun stringWithQuotes() {
         val result = compile(SourceFile.kotlin("main.kt", """
     fun main() {

@@ -23,101 +23,101 @@ import kotlin.test.assertEquals
 class ParserTest {
     @Test
     fun zero() {
-        assertEquals(Number(0), PluralRule("0"))
+        assertEquals(NumberLiteral(0), PluralRule("0"))
     }
 
     @Test
     fun notZero() {
-        assertEquals(BinaryExpression(N, NotEquals, Number(0)), PluralRule("n != 0"))
+        assertEquals(BinaryExpression(N, NotEquals, NumberLiteral(0)), PluralRule("n != 0"))
     }
 
     @Test
     fun gtZero() {
-        assertEquals(BinaryExpression(N, Greater, Number(0)), PluralRule("n > 0"))
+        assertEquals(BinaryExpression(N, Greater, NumberLiteral(0)), PluralRule("n > 0"))
     }
 
     @Test
     fun gteZero() {
-        assertEquals(BinaryExpression(N, GreaterOrEquals, Number(0)), PluralRule("n >= 0"))
+        assertEquals(BinaryExpression(N, GreaterOrEquals, NumberLiteral(0)), PluralRule("n >= 0"))
     }
 
     @Test
     fun ltTen() {
-        assertEquals(BinaryExpression(N, Less, Number(10)), PluralRule("n < 10"))
+        assertEquals(BinaryExpression(N, Less, NumberLiteral(10)), PluralRule("n < 10"))
     }
 
     @Test
     fun leTen() {
-        assertEquals(BinaryExpression(N, LessOrEquals, Number(10)), PluralRule("n <= 10"))
+        assertEquals(BinaryExpression(N, LessOrEquals, NumberLiteral(10)), PluralRule("n <= 10"))
     }
 
     @Test
     fun reminder() {
-        assertEquals(BinaryExpression(N, Remainder, Number(10)), PluralRule("n % 10"))
+        assertEquals(BinaryExpression(N, Remainder, NumberLiteral(10)), PluralRule("n % 10"))
     }
 
     @Test
     fun bracesNotZero() {
-        assertEquals(BinaryExpression(N, NotEquals, Number(0)), PluralRule("(n != 0)"))
+        assertEquals(BinaryExpression(N, NotEquals, NumberLiteral(0)), PluralRule("(n != 0)"))
     }
 
     @Test
     fun bracesGtZero() {
-        assertEquals(BinaryExpression(N, Greater, Number(0)), PluralRule("(n > 0)"))
+        assertEquals(BinaryExpression(N, Greater, NumberLiteral(0)), PluralRule("(n > 0)"))
     }
 
     @Test
     fun bracesReminder() {
-        assertEquals(BinaryExpression(N, Remainder, Number(10)), PluralRule("(n % 10)"))
+        assertEquals(BinaryExpression(N, Remainder, NumberLiteral(10)), PluralRule("(n % 10)"))
     }
 
     @Test
     fun andFalse() {
-        assertEquals(BinaryExpression(N, And, Number(0)), PluralRule("n && 0"))
+        assertEquals(BinaryExpression(N, And, NumberLiteral(0)), PluralRule("n && 0"))
     }
 
     @Test
     fun andTrue() {
-        assertEquals(BinaryExpression(N, And, Number(1)), PluralRule("n && 1"))
+        assertEquals(BinaryExpression(N, And, NumberLiteral(1)), PluralRule("n && 1"))
     }
 
     @Test
     fun orFalse() {
-        assertEquals(BinaryExpression(N, Or, Number(0)), PluralRule("n || 0"))
+        assertEquals(BinaryExpression(N, Or, NumberLiteral(0)), PluralRule("n || 0"))
     }
 
     @Test
     fun orTrue() {
-        assertEquals(BinaryExpression(N, Or, Number(1)), PluralRule("n || 1"))
+        assertEquals(BinaryExpression(N, Or, NumberLiteral(1)), PluralRule("n || 1"))
     }
 
     @Test
     fun ternary() {
-        assertEquals(TernaryExpression(N, Number(123), Number(321)), PluralRule("n ? 123 : 321"))
+        assertEquals(TernaryExpression(N, NumberLiteral(123), NumberLiteral(321)), PluralRule("n ? 123 : 321"))
     }
 
     @Test
     fun ternaryOrCondition() {
         assertEquals(TernaryExpression(
             BinaryExpression(
-                BinaryExpression(N, Equals, Number(1)),
+                BinaryExpression(N, Equals, NumberLiteral(1)),
                 Or,
                 BinaryExpression(
-                    BinaryExpression(N, Remainder, Number(10)),
+                    BinaryExpression(N, Remainder, NumberLiteral(10)),
                     Equals,
-                    Number(1)
+                    NumberLiteral(1)
                 ),
             ),
-            Number(0), Number(1)
+            NumberLiteral(0), NumberLiteral(1)
         ), PluralRule("(n==1 || n%10==1) ? 0 : 1"))
     }
 
     @Test
     fun parens() {
         assertEquals(TernaryExpression(
-                BinaryExpression(BinaryExpression(N, Remainder, Number(10)), Equals, Number(1)),
-                Number(0),
-                Number(1)
+                BinaryExpression(BinaryExpression(N, Remainder, NumberLiteral(10)), Equals, NumberLiteral(1)),
+                NumberLiteral(0),
+                NumberLiteral(1)
             ), PluralRule("((n%10==1) ? 0 : (1))")
         )
     }

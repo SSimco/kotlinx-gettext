@@ -17,24 +17,15 @@
 package name.kropp.kotlinx.gettext
 
 /**
- * An integer number
+ * Integer constant used in a plural rule.
  */
-public class Number(private val number: Int): PluralRuleExpression, PluralRuleToken {
-    override fun evaluate(n: Int): Int = number
+public data class NumberLiteral(
+    /**
+     * Value of the constant.
+     */
+    public val value: Int,
+) : PluralRuleExpression, PluralRuleToken {
+    override fun evaluate(n: Int): Int = value
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-
-        if (other !is Number) return false
-
-        if (number != other.number) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return number
-    }
-
-    override fun toString(): String = number.toString()
+    override fun toString(): String = value.toString()
 }
