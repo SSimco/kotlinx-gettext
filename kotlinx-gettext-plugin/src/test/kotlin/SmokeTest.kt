@@ -180,7 +180,7 @@ fun trc(ctx: String, text: String) {}
         assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
 
         val potFile = File(result.outputDirectory.parentFile, "i18n.pot").readText()
-        assertEquals("$DEFAULT_POT_HEADER\n\n#: main.kt:2\nmsgid \"Hello,\\n\\\"World\\\"!\"\nmsgstr \"\"\n", potFile)
+        assertEquals("$DEFAULT_POT_HEADER\n\n#: main.kt:2\nmsgid \"\"\n\"Hello,\\n\"\n\"\\\"World\\\"!\"\nmsgstr \"\"\n", potFile)
     }
 
     private fun compile(vararg sourceFile: SourceFile, defaultKeywords: List<String> = listOf("tr")): JvmCompilationResult {

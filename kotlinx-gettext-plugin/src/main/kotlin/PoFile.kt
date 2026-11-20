@@ -87,6 +87,7 @@ class PoFile(
             var text: String? = null
             var plural: String? = null
             var cases = mutableListOf<String>()
+            var field: Field? = null
 
             input.bufferedReader(Charsets.UTF_8).useLines { lines ->
                 lines.forEach { line ->
@@ -104,6 +105,7 @@ class PoFile(
                             text = null
                             plural = null
                             cases = mutableListOf()
+                            field = null
                         }
                         line == "#" -> comments += ""
                         line.startsWith("# ") -> comments += line.substringAfter("# ")
@@ -111,14 +113,34 @@ class PoFile(
                         line.startsWith("#: ") -> references += line.substringAfter("#: ")
                         line.startsWith("#, ") -> flags = line.substringAfter("#, ")
                         line.startsWith("#| ") -> previous += line.substringAfter("#| ")
-                        line.startsWith("msgctxt ") -> context = line.substringAfter("msgctxt ").unescape()
-                        line.startsWith("msgid ") -> text = line.substringAfter("msgid ").unescape()
-                        line.startsWith("msgid_plural ") -> plural = line.substringAfter("msgid_plural ").unescape()
-                        line.startsWith("msgstr ") -> cases += line.substringAfter("msgstr ").unescape()
-                        line.startsWith("msgstr[") -> cases += line.substringAfter("msgstr[").substringAfter("] ").unescape()
-                        else -> {
-                            if (cases.isNotEmpty()) {
-                                cases[0] = cases[0] + "\"\n\"" + line.trim('"')
+                        line.startsWith("msgctxt ") -> {
+                            context = line.substringAfter("msgctxt ").unescape()
+                            field = Field.Context
+                        }
+                        line.startsWith("msgid ") -> {
+                            text = line.substringAfter("msgid ").unescape()
+                            field = Field.Text
+                        }
+                        line.startsWith("msgid_plural ") -> {
+                            plural = line.substringAfter("msgid_plural ").unescape()
+                            field = Field.Plural
+                        }
+                        line.startsWith("msgstr ") -> {
+                            cases += line.substringAfter("msgstr ").unescape()
+                            field = Field.Case
+                        }
+                        line.startsWith("msgstr[") -> {
+                            cases += line.substringAfter("msgstr[").substringAfter("] ").unescape()
+                            field = Field.Case
+                        }
+                        line.trimStart().startsWith('"') -> {
+                            val value = line.unescape()
+                            when (field) {
+                                Field.Context -> context += value
+                                Field.Text -> text += value
+                                Field.Plural -> plural += value
+                                Field.Case -> cases[cases.lastIndex] += value
+                                null -> {}
                             }
                         }
                     }
@@ -130,6 +152,8 @@ class PoFile(
 
             return PoFile(entries.filter { it.text.isNotEmpty() }, entries.firstOrNull { it.text.isEmpty() } ?: DEFAULT_POT_HEADER)
         }
+
+        private enum class Field { Context, Text, Plural, Case }
 
         private fun String.unescape(): String {
             val trimmed = trim()

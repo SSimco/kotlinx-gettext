@@ -77,20 +77,36 @@ data class PoEntry(
             out.println("#| $prev")
         }
         if (context != null) {
-            out.println("msgctxt \"${context.escape()}\"")
+            out.printValue("msgctxt", context)
         }
-        out.println("msgid \"${text.escape()}\"")
+        out.printValue("msgid", text)
         if (plural != null) {
-            out.println("msgid_plural \"${plural.escape()}\"")
+            out.printValue("msgid_plural", plural)
             cases.forEachIndexed { idx, msg ->
-                out.println("msgstr[$idx] \"${msg.escape()}\"")
+                out.printValue("msgstr[$idx]", msg)
             }
         } else {
-            if (cases.isEmpty()) {
-                out.println("msgstr \"\"")
-            } else {
-                out.println("msgstr \"${cases[0].escape()}\"")
-            }
+            out.printValue("msgstr", cases.firstOrNull() ?: "")
+        }
+    }
+
+    /**
+     * Prints [value] after [keyword], following the GNU gettext layout.
+     * A value with a newline before its last character starts with an empty string,
+     * followed by one quoted line per newline-terminated segment.
+     */
+    private fun PrintStream.printValue(keyword: String, value: String) {
+        val newline = value.indexOf('\n')
+        if (newline < 0 || newline == value.lastIndex) {
+            println("$keyword \"${value.escape()}\"")
+            return
+        }
+        println("$keyword \"\"")
+        var start = 0
+        while (start < value.length) {
+            val end = value.indexOf('\n', start).let { if (it < 0) value.length else it + 1 }
+            println("\"${value.substring(start, end).escape()}\"")
+            start = end
         }
     }
 
