@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
+@file:JvmName("JavaLocales")
+
 package name.kropp.kotlinx.gettext
 
-public actual typealias Locale = java.util.Locale
+/**
+ * Converts this [Locale] to a `java.util.Locale` with the same language tag.
+ * The root locale becomes `java.util.Locale.ROOT`.
+ */
+public fun Locale.toJavaLocale(): java.util.Locale = java.util.Locale.forLanguageTag(tag)
 
-public actual val DefaultLocale: Locale
-    get() = Locale.ROOT
+/**
+ * Converts this `java.util.Locale` to a [Locale].
+ * The language, script, and region are kept, and variants and extensions are dropped.
+ */
+public fun java.util.Locale.toGettextLocale(): Locale = Locale(toLanguageTag())

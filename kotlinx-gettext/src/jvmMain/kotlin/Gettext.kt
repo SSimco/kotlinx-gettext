@@ -16,7 +16,8 @@
 
 package name.kropp.kotlinx.gettext
 
- import okio.source
+ import okio.Source
+import okio.source
 import java.io.InputStream
 import java.text.MessageFormat
 
@@ -24,14 +25,14 @@ import java.text.MessageFormat
  * Translate [MessageFormat]-compatible formatted [text] with provided [args].
  */
 public fun I18n.tr(text: String, vararg args: Any?): String =
-    MessageFormat.format(tr(text), *args)
+    formatMessage(tr(text), args)
 
 /**
  * Translate [MessageFormat]-compatible formatted [text] with different [plural] form
  * with provided [args], chosen based on provided number [n].
  */
 public fun I18n.trn(text: String, plural: String, n: Int, vararg args: Any?): String =
-    MessageFormat.format(trn(text, plural, n), *args)
+    formatMessage(trn(text, plural, n), args)
 
 /**
  * Translate [MessageFormat]-compatible formatted [text] with different [plural] form
@@ -44,14 +45,14 @@ public fun I18n.trn(text: String, plural: String, n: Long, vararg args: Any?): S
  * Translate [MessageFormat]-compatible formatted [text] with provided [args] in a given [context].
  */
 public fun I18n.trc(context: String, text: String, vararg args: Any?): String =
-    MessageFormat.format(trc(context, text), *args)
+    formatMessage(trc(context, text), args)
 
 /**
  * Translate [MessageFormat]-compatible formatted [text] with different [plural] form
  * with provided [args], chosen based on provided number [n] in a given [context].
  */
 public fun I18n.trnc(context: String, text: String, plural: String, n: Int, vararg args: Any?): String =
-    MessageFormat.format(trnc(context, text, plural, n), *args)
+    formatMessage(trnc(context, text, plural, n), args)
 
 /**
  * Translate [MessageFormat]-compatible formatted [text] with different [plural] form
@@ -65,3 +66,26 @@ public fun I18n.trnc(context: String, text: String, plural: String, n: Long, var
  */
 public fun Gettext.Companion.load(locale: Locale, s: InputStream): Gettext =
     load(locale, s.source())
+
+/**
+ * Load translations for given [locale] from given input stream.
+ */
+public fun Gettext.Companion.load(locale: java.util.Locale, s: InputStream): Gettext =
+    load(locale.toGettextLocale(), s.source())
+
+/**
+ * Load translations for given [locale] from the given [source].
+ */
+public fun Gettext.Companion.load(locale: java.util.Locale, source: Source): Gettext =
+    load(locale.toGettextLocale(), source)
+
+/**
+ * Load translations for given [locale] from given [sources].
+ * Sources are checked in order of priority, first available translation is used.
+ */
+public fun Gettext.Companion.load(locale: java.util.Locale, vararg sources: Source): Gettext =
+    load(locale.toGettextLocale(), *sources)
+
+// Formats with the catalog locale, so numbers and dates match the translation.
+private fun I18n.formatMessage(pattern: String, args: Array<out Any?>): String =
+    MessageFormat(pattern, locale.toJavaLocale()).format(args)

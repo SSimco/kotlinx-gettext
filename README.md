@@ -23,9 +23,23 @@ The library is available on [Maven Central](https://central.sonatype.com/artifac
 Load translated strings and apply translations using an instance of `I18n` class.
 
 ```kotlin
-val i18n = Gettext.load(Locale.GERMAN, Thread.currentThread().contextClassLoader.getResourceAsStream("de.po")!!)
+val i18n = Gettext.load(Locale("de"), Thread.currentThread().contextClassLoader.getResourceAsStream("de.po")!!)
 println(i18n.tr("Hello world!"))
 ```
+
+`Locale` is the same class on every platform.
+It accepts language tags, such as `de-DE`,
+and POSIX locale names, such as `de_DE.UTF-8`.
+In common code, pass the PO file as an okio `Source`:
+
+```kotlin
+val i18n = Gettext.load(Locale("de"), source)
+```
+
+On JVM, `Gettext.load` also accepts a `java.util.Locale`, such as `java.util.Locale.GERMAN`.
+`toJavaLocale()` and `toGettextLocale()` convert between the two types.
+The `MessageFormat` helpers, such as `i18n.tr("{0,number} files", count)`,
+format numbers and dates with the catalog locale.
 
 See `sample` module for a full example. Refer to [GNU gettext documentation](https://www.gnu.org/software/gettext/)
 for more details.
