@@ -116,4 +116,37 @@ class PoDataTest {
         assertEquals("Maskierter Backslash \\n bleibt Text", po["Escaped backslash \\n stays text"])
         assertEquals("Unbekanntes \\q Escape", po["Unknown \\q escape"])
     }
+
+    @Test
+    fun outOfOrderPlural() {
+        val po = PoData.read(resource("plural-out-of-order.po"))
+
+        assertEquals("Aktualisierung verfügbar", po["Update available", 1])
+        assertEquals("{{count}} Aktualisierungen verfügbar", po["Update available", 2])
+    }
+
+    @Test
+    fun sparsePlural() {
+        val po = PoData.read(resource("plural-sparse.po"))
+
+        assertEquals("Aktualisierung verfügbar", po["Update available", 1])
+        assertNull(po["Update available", 2])
+        assertEquals("{{count}} Aktualisierungen\nverfügbar", po["Update available", 5])
+    }
+
+    @Test
+    fun sparsePluralFallsBackToUntranslated() {
+        val gettext = Gettext.load(Locale("de"), resource("plural-sparse.po"))
+
+        assertEquals("{{count}} updates available", gettext.trn("Update available", "{{count}} updates available", 2))
+        assertEquals("{{count}} Aktualisierungen\nverfügbar", gettext.trn("Update available", "{{count}} updates available", 5))
+    }
+
+    @Test
+    fun pluralIndexAboveLimitIsSkipped() {
+        val po = PoData.read(resource("plural-huge-index.po"))
+
+        assertEquals("Aktualisierung verfügbar", po["Update available", 1])
+        assertEquals("{{count}} Aktualisierungen verfügbar", po["Update available", 2])
+    }
 }

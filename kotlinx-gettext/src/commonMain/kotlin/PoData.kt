@@ -63,6 +63,10 @@ public class PoData(
          */
         public const val CONTEXT_DELIMITER: Char = '\u0004'
 
+        // Real languages use at most six plural forms.
+        // A larger msgstr[N] index is malformed and is skipped to avoid a huge allocation.
+        private const val MAX_PLURAL_FORMS = 100
+
         /**
          * Loads PO file from provided [input].
          */
@@ -74,7 +78,9 @@ public class PoData(
             var id: String? = null
             var str = ""
             var plural: String? = null
-            var cases = mutableListOf<String?>()
+            // Plural forms by their msgstr[N] index.
+            var cases = mutableMapOf<Int, String>()
+            var caseIndex = 0
 
             var key = Key.Unknown
 
@@ -89,7 +95,7 @@ public class PoData(
                             id = null
                             str = ""
                             plural = null
-                            cases = mutableListOf()
+                            cases = mutableMapOf()
                             key = Key.Unknown
                         }
                         line.startsWith("msgctxt ") -> {
@@ -109,8 +115,14 @@ public class PoData(
                             key = Key.Str
                         }
                         line.startsWith("msgstr[") -> {
-                            cases += line.substringAfter("msgstr[").substringAfter("] ").unescape().ifEmpty { null }
-                            key = Key.Cases
+                            val index = line.substringAfter("msgstr[").substringBefore(']').trim().toIntOrNull()
+                            if (index != null && index in 0 until MAX_PLURAL_FORMS) {
+                                caseIndex = index
+                                cases[index] = line.substringAfter(']').unescape()
+                                key = Key.Cases
+                            } else {
+                                key = Key.Unknown
+                            }
                         }
                         else -> {
                             val unescaped = line.unescape()
@@ -122,9 +134,7 @@ public class PoData(
                                     Key.Id -> id += unescaped
                                     Key.Str -> str += unescaped
                                     Key.Plural -> plural += unescaped
-                                    Key.Cases -> if (cases.isNotEmpty()) {
-                                        cases[cases.size - 1] += unescaped
-                                    }
+                                    Key.Cases -> cases[caseIndex] = cases.getValue(caseIndex) + unescaped
 
                                     else -> {}
                                 }
@@ -166,9 +176,11 @@ public class PoData(
             }
         }
 
-        private fun entry(entries: MutableMap<String, PoEntry>, context: String?, id: String?, str: String, plural: String?, cases: List<String?>) {
+        private fun entry(entries: MutableMap<String, PoEntry>, context: String?, id: String?, str: String, plural: String?, cases: Map<Int, String>) {
             if (!id.isNullOrEmpty() && (str.isNotEmpty() || cases.isNotEmpty())) {
-                entries[if (context != null) "$context$CONTEXT_DELIMITER$id" else id] = PoEntry(str, plural, cases.toList())
+                // Missing and empty forms become null, so lookups fall back to the untranslated text.
+                val forms = List((cases.keys.maxOrNull() ?: -1) + 1) { cases[it]?.ifEmpty { null } }
+                entries[if (context != null) "$context$CONTEXT_DELIMITER$id" else id] = PoEntry(str, plural, forms)
             }
         }
     }
