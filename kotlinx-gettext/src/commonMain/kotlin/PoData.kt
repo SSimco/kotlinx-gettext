@@ -149,7 +149,17 @@ public class PoData(
             } finally {
                 bufferedReader.close()
             }
-            return PoData(entries, PluralRule(pluralRule))
+            return PoData(entries, parsePluralRule(pluralRule))
+        }
+
+        // GNU gettext uses this rule when a catalog has no valid Plural-Forms rule.
+        private val DefaultPluralRule: PluralRuleExpression = PluralRule("n != 1")
+
+        // Parses the plural rule from a catalog header.
+        // A missing or invalid rule falls back to the GNU default, n != 1.
+        internal fun parsePluralRule(rule: String): PluralRuleExpression {
+            val parsed = PluralRule(rule)
+            return if (parsed == EmptyRule) DefaultPluralRule else parsed
         }
 
         private fun String.unescape(): String {

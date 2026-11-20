@@ -101,8 +101,19 @@ class PoDataTest {
     fun invalidPluralRule() {
         val po = PoData.read(resource("invalid-plural.po"))
 
+        // An invalid rule falls back to the GNU default, n != 1.
         assertEquals("Aktualisierung verfügbar", po["Update available", 1])
-        assertEquals("Aktualisierung verfügbar", po["Update available", 2])
+        assertEquals("{{count}} Aktualisierungen verfügbar", po["Update available", 2])
+    }
+
+    @Test
+    fun missingPluralRule() {
+        val po = PoData.read(resource("no-plural-forms.po"))
+
+        // A missing rule falls back to the GNU default, n != 1.
+        assertEquals("{{count}} Aktualisierungen verfügbar", po["Update available", 0])
+        assertEquals("Aktualisierung verfügbar", po["Update available", 1])
+        assertEquals("{{count}} Aktualisierungen verfügbar", po["Update available", 2])
     }
 
     @Test

@@ -74,9 +74,10 @@ class MoDataTest {
     fun missingHeaderUsesDefaultPluralRule() {
         val gettext = Gettext.load(Locale("de"), mo("File\u0000Files" to "Datei\u0000Dateien"))
 
-        // Without a Plural-Forms header, EmptyRule always selects the first form, as for PO files.
+        // Without a Plural-Forms header, the GNU default rule n != 1 applies.
+        assertEquals("Dateien", gettext.trn("File", "Files", 0))
         assertEquals("Datei", gettext.trn("File", "Files", 1))
-        assertEquals("Datei", gettext.trn("File", "Files", 2))
+        assertEquals("Dateien", gettext.trn("File", "Files", 2))
     }
 
     @Test

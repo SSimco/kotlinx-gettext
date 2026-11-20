@@ -1,0 +1,8 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Update available"
+msgid_plural "{{count}} updates available"
+msgstr[0] "Aktualisierung verfügbar"
+msgstr[1] "{{count}} Aktualisierungen verfügbar"

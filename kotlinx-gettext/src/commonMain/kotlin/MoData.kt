@@ -94,7 +94,7 @@ internal object MoData {
                     PoData.entry(entries, null, id, translation, null, emptyMap())
                 }
             }
-            return PoData(entries, PluralRule(pluralRule))
+            return PoData(entries, PoData.parsePluralRule(pluralRule))
         }
 
         // Reads the string described by the table entry at the given offset.
