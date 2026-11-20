@@ -62,6 +62,12 @@ public fun I18n.trnc(context: String, text: String, plural: String, n: Long, var
     trnc(context, text, plural, n.toInt(), *args)
 
 /**
+ * Loads a PO file from the given input stream and closes it.
+ */
+public fun PoData.Companion.read(input: InputStream): PoData =
+    read(input.source())
+
+/**
  * Load translations for given [locale] from given input stream.
  */
 public fun Gettext.Companion.load(locale: Locale, s: InputStream): Gettext =

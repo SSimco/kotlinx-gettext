@@ -28,6 +28,14 @@ public class PoData(
     private val pluralRule: PluralRuleExpression
 ) {
     /**
+     * Translated entries, keyed by message id.
+     * A key with a context has the form `context` + [CONTEXT_DELIMITER] + `id`.
+     * The header and entries without a translation are not included.
+     */
+    public val entries: Map<String, PoEntry>
+        get() = strings
+
+    /**
      * Get translation string for the key [id].
      * For a plural entry, returns the first plural form.
      * Returns `null` when the key is missing or its translation is empty.

@@ -37,6 +37,29 @@ class PoDataTest {
     }
 
     @Test
+    fun entries() {
+        val po = PoData.read(resource("ru.po"))
+
+        assertEquals(
+            mapOf(
+                "feminine${PoData.CONTEXT_DELIMITER}Installed" to PoEntry("Установлена", null, emptyList()),
+                "masculine${PoData.CONTEXT_DELIMITER}Installed" to PoEntry("Установлен", null, emptyList()),
+            ),
+            po.entries,
+        )
+    }
+
+    @Test
+    fun pluralEntries() {
+        val po = PoData.read(resource("some-plural.po"))
+
+        assertEquals(
+            mapOf("Update available" to PoEntry("", "{{count}} updates available", listOf("Aktualisierung verfügbar", null))),
+            po.entries,
+        )
+    }
+
+    @Test
     fun multilineKey() {
         val po = PoData.read(resource("de.po"))
 
