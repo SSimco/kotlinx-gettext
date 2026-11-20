@@ -1,0 +1,25 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "C:\\new\\folder"
+msgstr "C:\\neu\\Ordner"
+
+msgid "Name:\tValue"
+msgstr "Name:\tWert"
+
+msgid "Ends with backslash\\"
+msgstr "Endet mit Backslash\\"
+
+msgid "Line\r\nbreak"
+msgstr "Zeilen\r\numbruch"
+
+msgid ""
+"Escaped backslash \\"
+"n stays text"
+msgstr ""
+"Maskierter Backslash \\"
+"n bleibt Text"
+
+msgid "Unknown \q escape"
+msgstr "Unbekanntes \q Escape"

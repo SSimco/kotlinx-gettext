@@ -158,7 +158,28 @@ class PoFile(
         private fun String.unescape(): String {
             val trimmed = trim()
             val unquoted = if (trimmed.startsWith('"')) trimmed.substring(1, trimmed.lastIndex) else trimmed
-            return unquoted.replace("\\\"", "\"").replace("\\n", "\n")
+            // Decode in one pass so that an escaped backslash never starts another escape.
+            return buildString(unquoted.length) {
+                var i = 0
+                while (i < unquoted.length) {
+                    val c = unquoted[i]
+                    if (c == '\\' && i + 1 < unquoted.length) {
+                        when (val next = unquoted[i + 1]) {
+                            'n' -> append('\n')
+                            't' -> append('\t')
+                            'r' -> append('\r')
+                            '"' -> append('"')
+                            '\\' -> append('\\')
+                            // Keep unsupported escape sequences as written.
+                            else -> append(c).append(next)
+                        }
+                        i += 2
+                    } else {
+                        append(c)
+                        i++
+                    }
+                }
+            }
         }
     }
 }

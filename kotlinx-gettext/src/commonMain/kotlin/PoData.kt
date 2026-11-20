@@ -81,8 +81,7 @@ public class PoData(
             val bufferedReader = input.buffer()
             try {
                 while(true) {
-                    val rawLine = bufferedReader.readUtf8Line() ?: break
-                    val line = rawLine.replace("\\n", "\n")
+                    val line = bufferedReader.readUtf8Line() ?: break
                     when {
                         line.isBlank() -> {
                             entry(entries, context, id, str, plural, cases)
@@ -114,11 +113,10 @@ public class PoData(
                             key = Key.Cases
                         }
                         else -> {
-                            val trimmed = line.trim('"')
-                            if (id?.isEmpty() == true && key == Key.Str && trimmed.startsWith("Plural-Forms:")) {
-                                pluralRule = trimmed.substringAfter("plural=").substringBefore(';')
+                            val unescaped = line.unescape()
+                            if (id?.isEmpty() == true && key == Key.Str && unescaped.startsWith("Plural-Forms:")) {
+                                pluralRule = unescaped.substringAfter("plural=").substringBefore(';')
                             } else {
-                                val unescaped = rawLine.unescape()
                                 when (key) {
                                     Key.Context -> context += unescaped
                                     Key.Id -> id += unescaped
@@ -144,7 +142,28 @@ public class PoData(
         private fun String.unescape(): String {
             val trimmed = trim()
             val unquoted = if (trimmed.startsWith('"')) trimmed.substring(1, trimmed.lastIndex) else trimmed
-            return unquoted.replace("\\\"", "\"").replace("\\n", "\n")
+            // Decode in one pass so that an escaped backslash never starts another escape.
+            return buildString(unquoted.length) {
+                var i = 0
+                while (i < unquoted.length) {
+                    val c = unquoted[i]
+                    if (c == '\\' && i + 1 < unquoted.length) {
+                        when (val next = unquoted[i + 1]) {
+                            'n' -> append('\n')
+                            't' -> append('\t')
+                            'r' -> append('\r')
+                            '"' -> append('"')
+                            '\\' -> append('\\')
+                            // Keep unsupported escape sequences as written.
+                            else -> append(c).append(next)
+                        }
+                        i += 2
+                    } else {
+                        append(c)
+                        i++
+                    }
+                }
+            }
         }
 
         private fun entry(entries: MutableMap<String, PoEntry>, context: String?, id: String?, str: String, plural: String?, cases: List<String?>) {

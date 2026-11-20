@@ -201,6 +201,41 @@ class PoTest {
         assertEquals(entry, PoFile.read(out.toByteArray().inputStream()).entries.single())
     }
 
+    @Test
+    fun `read escape sequences`() {
+        val s = """
+            |msgid "C:\\new\tpath\r\n"
+            |msgstr ""
+            |"Escaped backslash \\"
+            |"n stays text \q"
+            |""".trimMargin()
+        val po = PoFile.read(s.byteInputStream())
+
+        assertEquals("C:\\new\tpath\r\n", po.entries[0].text)
+        assertEquals("Escaped backslash \\n stays text \\q", po.entries[0].cases[0])
+    }
+
+    @Test
+    fun `write escape sequences`() {
+        val out = ByteArrayOutputStream()
+        PoFile(listOf(PoEntry(emptyList(), emptyList(), emptyList(), null, emptyList(), null, "C:\\new\tpath\r", null, listOf("Ends with backslash\\")))).write(out)
+        assertEquals("$DEFAULT_POT_HEADER\n\nmsgid \"C:\\\\new\\tpath\\r\"\nmsgstr \"Ends with backslash\\\\\"\n", out.toString())
+    }
+
+    @Test
+    fun `round trip escape sequences`() {
+        val entry = PoEntry(
+            emptyList(), emptyList(), emptyList(), null, emptyList(), null,
+            "C:\\new\\folder\\",
+            null,
+            listOf("Tab\there\nand \"quotes\" with \\n")
+        )
+        val out = ByteArrayOutputStream()
+        PoFile(listOf(entry)).write(out)
+
+        assertEquals(entry, PoFile.read(out.toByteArray().inputStream()).entries.single())
+    }
+
     private val multilineHeader = """
         |# SOME DESCRIPTIVE TITLE.
         |#, fuzzy

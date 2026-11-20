@@ -104,4 +104,16 @@ class PoDataTest {
         assertEquals("Aktualisierung verfügbar", po["Update available", 1])
         assertEquals("Aktualisierung verfügbar", po["Update available", 2])
     }
+
+    @Test
+    fun escapeSequences() {
+        val po = PoData.read(resource("escapes.po"))
+
+        assertEquals("C:\\neu\\Ordner", po["C:\\new\\folder"])
+        assertEquals("Name:\tWert", po["Name:\tValue"])
+        assertEquals("Endet mit Backslash\\", po["Ends with backslash\\"])
+        assertEquals("Zeilen\r\numbruch", po["Line\r\nbreak"])
+        assertEquals("Maskierter Backslash \\n bleibt Text", po["Escaped backslash \\n stays text"])
+        assertEquals("Unbekanntes \\q Escape", po["Unknown \\q escape"])
+    }
 }

@@ -91,9 +91,9 @@ data class PoEntry(
     }
 
     /**
-     * Prints [value] after [keyword], following the GNU gettext layout.
-     * A value with a newline before its last character starts with an empty string,
-     * followed by one quoted line per newline-terminated segment.
+     * Prints [value] after [keyword] in the GNU gettext layout.
+     * If [value] has a newline before its last character,
+     * the keyword gets an empty string and each line of [value] follows in its own quotes.
      */
     private fun PrintStream.printValue(keyword: String, value: String) {
         val newline = value.indexOf('\n')
@@ -110,8 +110,17 @@ data class PoEntry(
         }
     }
 
-    private fun String.escape(): String {
-        return replace("\n", "\\n").replace("\"", "\\\"")
+    private fun String.escape(): String = buildString(length) {
+        for (c in this@escape) {
+            when (c) {
+                '\\' -> append("\\\\")
+                '"' -> append("\\\"")
+                '\n' -> append("\\n")
+                '\t' -> append("\\t")
+                '\r' -> append("\\r")
+                else -> append(c)
+            }
+        }
     }
 
     override fun toString(): String {
