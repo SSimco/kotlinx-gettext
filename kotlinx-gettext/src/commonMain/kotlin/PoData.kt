@@ -127,7 +127,7 @@ public class PoData(
                         else -> {
                             val unescaped = line.unescape()
                             if (id?.isEmpty() == true && key == Key.Str && unescaped.startsWith("Plural-Forms:")) {
-                                pluralRule = unescaped.substringAfter("plural=").substringBefore(';')
+                                pluralRule = pluralRuleFromHeader(unescaped)
                             } else {
                                 when (key) {
                                     Key.Context -> context += unescaped
@@ -176,7 +176,16 @@ public class PoData(
             }
         }
 
-        private fun entry(entries: MutableMap<String, PoEntry>, context: String?, id: String?, str: String, plural: String?, cases: Map<Int, String>) {
+        // Returns the plural rule expression from the catalog header,
+        // or an empty string when the header has no Plural-Forms line.
+        internal fun pluralRuleFromHeader(header: String): String {
+            val line = header.lineSequence().firstOrNull { it.startsWith("Plural-Forms:") } ?: return ""
+            return line.substringAfter("plural=").substringBefore(';')
+        }
+
+        // Adds an entry to the catalog.
+        // Entries without an id or without any translation are skipped.
+        internal fun entry(entries: MutableMap<String, PoEntry>, context: String?, id: String?, str: String, plural: String?, cases: Map<Int, String>) {
             if (!id.isNullOrEmpty() && (str.isNotEmpty() || cases.isNotEmpty())) {
                 // Missing and empty forms become null, so lookups fall back to the untranslated text.
                 val forms = List((cases.keys.maxOrNull() ?: -1) + 1) { cases[it]?.ifEmpty { null } }

@@ -17,9 +17,10 @@
 package name.kropp.kotlinx.gettext
 
 import okio.Source
+import okio.buffer
 
 /**
- * Provides `gettext`-compatible interface for string translation via PO files.
+ * Provides `gettext`-compatible interface for string translation via PO or MO files.
  */
 public class Gettext private constructor(
     override val locale: Locale,
@@ -102,17 +103,32 @@ public class Gettext private constructor(
     public companion object {
         /**
          * Load translations for given [locale] from the given [source].
+         * The source can be a PO file or a compiled MO file.
+         * The format is detected from the content.
+         * MO files must use UTF-8.
+         *
+         * @throws IllegalArgumentException if the MO file is malformed.
          */
         public fun load(locale: Locale, source: Source): Gettext {
-            return Gettext(locale, listOf(PoData.read(source)))
+            return Gettext(locale, listOf(readCatalog(source)))
         }
 
         /**
          * Load translations for given [locale] from given [sources].
          * Sources are checked in order of priority, first available translation is used.
+         * Each source can be a PO file or a compiled MO file.
+         * The format is detected from the content.
+         * MO files must use UTF-8.
+         *
+         * @throws IllegalArgumentException if an MO file is malformed.
          */
         public fun load(locale: Locale, vararg sources: Source): Gettext {
-            return Gettext(locale, sources.map { source -> PoData.read(source) })
+            return Gettext(locale, sources.map { source -> readCatalog(source) })
+        }
+
+        private fun readCatalog(source: Source): PoData {
+            val buffered = source.buffer()
+            return if (MoData.isMo(buffered)) MoData.read(buffered) else PoData.read(buffered)
         }
 
         /**

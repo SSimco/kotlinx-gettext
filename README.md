@@ -36,6 +36,10 @@ In common code, pass the PO file as an okio `Source`:
 val i18n = Gettext.load(Locale("de"), source)
 ```
 
+`Gettext.load` also accepts compiled MO files, such as those built with `msgfmt`.
+It detects the format from the file content.
+MO files must use UTF-8.
+
 On JVM, `Gettext.load` also accepts a `java.util.Locale`, such as `java.util.Locale.GERMAN`.
 `toJavaLocale()` and `toGettextLocale()` convert between the two types.
 The `MessageFormat` helpers, such as `i18n.tr("{0,number} files", count)`,
@@ -63,7 +67,7 @@ Then invoke `./gradlew gettext` to extract strings for translations into `src/me
 
 Translate messages with any software or service supporting Gettext format. The result will be a number of .po files,
 which you should put into resources.
+You can also compile them into .mo files with `msgfmt` and load those instead.
 
 ## Known issues
  * The library only supports Kotlin/JVM and Kotlin/JS as of now, Multiplatform Native port is in progress.
- * .mo files are not (yet) supported.
