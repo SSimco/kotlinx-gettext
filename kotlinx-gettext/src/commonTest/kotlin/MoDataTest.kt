@@ -51,6 +51,12 @@ class MoDataTest {
     }
 
     @Test
+    fun readCatalogEntriesSameAsPo() {
+        assertEquals(PoData.readCatalog(resource("mo.po")).entries, PoData.readCatalog(resource("mo.mo")).entries)
+        assertEquals(PoData.read(resource("mo.po")).entries, PoData.readCatalog(resource("mo-be.mo")).entries)
+    }
+
+    @Test
     fun emptyPluralFormsFallBack() {
         val gettext = Gettext.load(
             Locale("de"),

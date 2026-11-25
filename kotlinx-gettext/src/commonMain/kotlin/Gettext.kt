@@ -108,7 +108,7 @@ public class Gettext private constructor(
          * @throws IllegalArgumentException if the MO file is malformed.
          */
         public fun load(locale: Locale, catalog: ByteArray): Gettext {
-            return Gettext(locale, listOf(readCatalog(catalog)))
+            return Gettext(locale, listOf(PoData.readCatalog(catalog)))
         }
 
         /**
@@ -121,11 +121,8 @@ public class Gettext private constructor(
          * @throws IllegalArgumentException if an MO file is malformed.
          */
         public fun load(locale: Locale, vararg catalogs: ByteArray): Gettext {
-            return Gettext(locale, catalogs.map { catalog -> readCatalog(catalog) })
+            return Gettext(locale, catalogs.map { catalog -> PoData.readCatalog(catalog) })
         }
-
-        private fun readCatalog(data: ByteArray): PoData =
-            if (MoData.isMo(data)) MoData.read(data) else PoData.read(data)
 
         /**
          * Fallback locale that doesn't provide any translations.

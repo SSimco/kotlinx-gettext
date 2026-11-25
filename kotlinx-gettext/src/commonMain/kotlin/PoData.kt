@@ -77,6 +77,17 @@ public class PoData(
         private const val MAX_PLURAL_FORMS = 100
 
         /**
+         * Loads a catalog from the given [data],
+         * which can be a PO file or a compiled MO file.
+         * The format is detected from the content.
+         * Catalogs must use UTF-8.
+         *
+         * @throws IllegalArgumentException if the MO file is malformed.
+         */
+        public fun readCatalog(data: ByteArray): PoData =
+            if (MoData.isMo(data)) MoData.read(data) else read(data)
+
+        /**
          * Loads a PO file from the given UTF-8 encoded [input].
          */
         public fun read(input: ByteArray): PoData {
