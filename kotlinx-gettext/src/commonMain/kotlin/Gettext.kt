@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.kropp.kotlinx.gettext
+package io.github.ssimco.kotlinx.gettext
 
 /**
  * Provides `gettext`-compatible interface for string translation via PO or MO files.

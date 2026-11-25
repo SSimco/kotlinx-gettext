@@ -16,7 +16,7 @@
 
 @file:JvmName("JavaLocales")
 
-package name.kropp.kotlinx.gettext
+package io.github.ssimco.kotlinx.gettext
 
 /**
  * Converts this [Locale] to a `java.util.Locale` with the same language tag.

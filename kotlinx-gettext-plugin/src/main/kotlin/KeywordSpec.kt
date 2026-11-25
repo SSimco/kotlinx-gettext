@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.kropp.kotlinx.gettext
+package io.github.ssimco.kotlinx.gettext
 
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrConst

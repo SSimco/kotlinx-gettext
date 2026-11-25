@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.kropp.kotlinx.gettext
+package io.github.ssimco.kotlinx.gettext
 
 public actual fun resource(name: String): ByteArray {
     return Thread.currentThread().contextClassLoader.getResourceAsStream(name)!!.use { it.readBytes() }

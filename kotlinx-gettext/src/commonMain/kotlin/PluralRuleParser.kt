@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package name.kropp.kotlinx.gettext
+package io.github.ssimco.kotlinx.gettext
 
-import name.kropp.kotlinx.gettext.BinaryOp.*
-import name.kropp.kotlinx.gettext.PluralRuleToken.*
+import io.github.ssimco.kotlinx.gettext.BinaryOp.*
+import io.github.ssimco.kotlinx.gettext.PluralRuleToken.*
 
 internal class PluralRuleParser(private val rule: String) {
     /**

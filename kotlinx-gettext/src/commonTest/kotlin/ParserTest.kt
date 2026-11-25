@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package name.kropp.kotlinx.gettext
+package io.github.ssimco.kotlinx.gettext
 
-import name.kropp.kotlinx.gettext.BinaryOp.*
+import io.github.ssimco.kotlinx.gettext.BinaryOp.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

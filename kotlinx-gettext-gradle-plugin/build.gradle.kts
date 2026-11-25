@@ -21,7 +21,7 @@ gradlePlugin {
             vcsUrl = "https://github.com/ssimco/kotlinx-gettext"
             tags = listOf("kotlin", "i18n", "gettext")
 
-            implementationClass = "name.kropp.kotlinx.gettext.gradle.KotlinxGettextGradlePlugin"
+            implementationClass = "io.github.ssimco.kotlinx.gettext.gradle.KotlinxGettextGradlePlugin"
         }
     }
 }

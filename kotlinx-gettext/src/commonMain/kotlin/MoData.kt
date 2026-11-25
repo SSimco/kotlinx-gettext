@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.kropp.kotlinx.gettext
+package io.github.ssimco.kotlinx.gettext
 
 // Reads compiled GNU gettext MO files into the same PoData model as PO files.
 // The format is described at

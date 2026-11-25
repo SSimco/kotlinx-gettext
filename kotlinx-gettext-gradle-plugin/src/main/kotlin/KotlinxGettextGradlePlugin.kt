@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.kropp.kotlinx.gettext.gradle
+package io.github.ssimco.kotlinx.gettext.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
